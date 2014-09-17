@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">LiveWallpaper</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
-
+    <string name="app_name">Tech Lines</string>
+	<string name="line_length">Length</string>
+	<string name="line_count">Number</string>
+	<string name="line_width">Width</string>
+	<string name="line_speed">Speed</string>
 </resources>

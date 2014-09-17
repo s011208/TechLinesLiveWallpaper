@@ -15,15 +15,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
 
+/**
+ * @author Yen-Hsun_Huang
+ */
 public class SetWallpaperActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.settings_activity);
         Intent intent = new Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER);
         intent.putExtra(WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT, new ComponentName(this,
-                MyWallpaperService.class));
+                TechLinesWallpaperService.class));
         startActivity(intent);
         finish();
     }
