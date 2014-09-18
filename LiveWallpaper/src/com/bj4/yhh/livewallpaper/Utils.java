@@ -13,9 +13,60 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URL;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.util.Log;
 
+/**
+ * @author Yen-Hsun_Huang
+ */
 public class Utils {
+    public static final WeatherData getWeatherData(final String rawData) {
+        WeatherData rtn = null;
+        try {
+            JSONObject data = new JSONObject(rawData).getJSONObject("query")
+                    .getJSONObject("results").getJSONObject("channel");
+            JSONObject location = data.getJSONObject("location");
+            JSONObject condition = data.getJSONObject("item").getJSONObject("condition");
+            String city = location.getString("city");
+            String country = location.getString("country");
+            String text = condition.getString("text");
+            float temp = condition.getInt("temp");
+            int code = condition.getInt("code");
+            rtn = new WeatherData(code, temp, text, city, country);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return rtn;
+    }
+
+    public static final String generateWeatherFromYqlResult(final long woeid) {
+        return "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%3D"
+                + woeid
+                + "&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=";
+    }
+
+    public static final long getWoeidFromYqlResult(final String rawData) {
+        try {
+            JSONObject data = new JSONObject(rawData).getJSONObject("query")
+                    .getJSONObject("results").getJSONObject("Result");
+            return data.getLong("woeid");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public static final String generateCurrentLocationYqlUrl(final double longtitude,
+            final double latitude) {
+        return "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20geo.placefinder%20where%20text%3D%22"
+                + longtitude
+                + "%2C"
+                + latitude
+                + "%22%20and%20gflags%3D%22R%22&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=";
+    }
+
     @SuppressWarnings("deprecation")
     public static String parseOnInternet(String url) {
         URL u;
