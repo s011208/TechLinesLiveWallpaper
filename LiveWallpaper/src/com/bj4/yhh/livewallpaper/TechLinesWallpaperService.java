@@ -14,6 +14,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.BatteryManager;
 import android.os.Handler;
 import android.service.wallpaper.WallpaperService;
@@ -47,6 +49,8 @@ public class TechLinesWallpaperService extends WallpaperService {
 
         private Context mContext;
 
+        private LocationManager mLocationManager;
+
         private final BroadcastReceiver mBatteryReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -56,11 +60,25 @@ public class TechLinesWallpaperService extends WallpaperService {
 
         public TechLinesWallpaper(Context context) {
             mContext = context.getApplicationContext();
+            mLocationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
             mReleasedWormPaint.setDither(true);
             mReleasedWormPaint.setAntiAlias(true);
             mStruggledWormPaint.setDither(true);
             mStruggledWormPaint.setAntiAlias(true);
             loadInfo();
+            loadWeatherData();
+        }
+
+        private void loadWeatherData() {
+            Location location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+//            if (location != null) {
+//                double longitude = location.getLongitude();
+//                double latitude = location.getLatitude();
+                Intent startIntent = new Intent(mContext, WeatherParseService.class);
+                startIntent.putExtra(WeatherParseService.INTENT_KEY_LATITUDE, 0d);
+                startIntent.putExtra(WeatherParseService.INTENT_KEY_LONGTITUDE, 0d);
+                mContext.startService(startIntent);
+//            }
         }
 
         public void loadInfo() {
@@ -205,7 +223,7 @@ public class TechLinesWallpaperService extends WallpaperService {
                             if (mGrabbingWorm != line) {
                                 line.calculate(mWidth, mHeight, canvas, mReleasedWormPaint);
                             } else {
-                                line.struggle(mWidth, mHeight, canvas, mStruggledWormPaint,
+                                line.showInfo(mWidth, mHeight, canvas, mStruggledWormPaint,
                                         mReleasedWormPaint);
                             }
                         }

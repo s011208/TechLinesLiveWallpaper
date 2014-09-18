@@ -3,9 +3,12 @@ package com.bj4.yhh.livewallpaper;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.drawable.BitmapDrawable;
 
 /**
  * @author Yen-Hsun_Huang
@@ -25,7 +28,10 @@ public class TechLines {
 
     private boolean mIsGrabbing = false;
 
+    private Context mContext;
+
     public TechLines(float density, Context context) {
+        mContext = context;
         SharedPreferences pref = context.getSharedPreferences(TechLinesSettings.PREF_FILE,
                 Context.MODE_PRIVATE);
         final int baseWormSpeed = pref.getInt(TechLinesSettings.PREF_WORM_SPEED,
@@ -127,10 +133,15 @@ public class TechLines {
 
     private int mGrabbingRadius = 0;
 
-    public void struggle(final int width, final int height, final Canvas canvas,
+    public void showInfo(final int width, final int height, final Canvas canvas,
             final Paint circlaPaint, final Paint paint) {
         int start = 0, finalPosition = 0;
         mGrabbingRadius += GRABBING_GROWTH_CONSTANT;
+        // Bitmap bmp = BitmapFactory.decodeResource(mContext.getResources(),
+        // R.drawable.w00);
+        // canvas.drawBitmap(bmp, mLoadingLineX - LOADING_WORM_LENGTH / 2,
+        // mLoadingLineY, null);
+        // bmp.recycle();
         switch (mWay) {
             case 0:
                 start = mLoadingLineX - mGrabbingRadius * 2;

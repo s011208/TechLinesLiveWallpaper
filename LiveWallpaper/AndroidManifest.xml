@@ -15,6 +15,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
         android:allowBackup="true"
@@ -37,6 +40,7 @@
                 android:resource="@xml/tech_lines" >
             </meta-data>
         </service>
+        <service android:name=".WeatherParseService" />
 
         <activity
             android:name=".TechLinesSettings"

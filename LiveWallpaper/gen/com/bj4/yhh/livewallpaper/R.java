@@ -35,6 +35,54 @@ public final class R {
     }
     public static final class drawable {
         public static final int ic_launcher=0x7f020000;
+        public static final int w00=0x7f020001;
+        public static final int w01=0x7f020002;
+        public static final int w02=0x7f020003;
+        public static final int w03=0x7f020004;
+        public static final int w04=0x7f020005;
+        public static final int w05=0x7f020006;
+        public static final int w06=0x7f020007;
+        public static final int w07=0x7f020008;
+        public static final int w08=0x7f020009;
+        public static final int w09=0x7f02000a;
+        public static final int w10=0x7f02000b;
+        public static final int w11=0x7f02000c;
+        public static final int w12=0x7f02000d;
+        public static final int w13=0x7f02000e;
+        public static final int w14=0x7f02000f;
+        public static final int w15=0x7f020010;
+        public static final int w16=0x7f020011;
+        public static final int w17=0x7f020012;
+        public static final int w18=0x7f020013;
+        public static final int w19=0x7f020014;
+        public static final int w20=0x7f020015;
+        public static final int w21=0x7f020016;
+        public static final int w22=0x7f020017;
+        public static final int w23=0x7f020018;
+        public static final int w24=0x7f020019;
+        public static final int w25=0x7f02001a;
+        public static final int w26=0x7f02001b;
+        public static final int w27=0x7f02001c;
+        public static final int w28=0x7f02001d;
+        public static final int w29=0x7f02001e;
+        public static final int w30=0x7f02001f;
+        public static final int w31=0x7f020020;
+        public static final int w32=0x7f020021;
+        public static final int w33=0x7f020022;
+        public static final int w34=0x7f020023;
+        public static final int w35=0x7f020024;
+        public static final int w36=0x7f020025;
+        public static final int w37=0x7f020026;
+        public static final int w38=0x7f020027;
+        public static final int w39=0x7f020028;
+        public static final int w40=0x7f020029;
+        public static final int w41=0x7f02002a;
+        public static final int w42=0x7f02002b;
+        public static final int w43=0x7f02002c;
+        public static final int w44=0x7f02002d;
+        public static final int w45=0x7f02002e;
+        public static final int w46=0x7f02002f;
+        public static final int w47=0x7f020030;
     }
     public static final class id {
         public static final int worm_color=0x7f0a0004;
