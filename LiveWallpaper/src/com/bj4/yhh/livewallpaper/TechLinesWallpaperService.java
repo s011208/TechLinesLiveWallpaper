@@ -70,7 +70,11 @@ public class TechLinesWallpaperService extends WallpaperService {
         public void onVisibilityChanged(boolean visible) {
             mIsVisible = visible;
             if (visible) {
-                loadInfo();
+                if (mContext
+                        .getSharedPreferences(TechLinesSettings.PREF_FILE, Context.MODE_PRIVATE)
+                        .getBoolean(TechLinesSettings.PREF_HAS_SETTING_CHANGED, false) == true) {
+                    loadInfo();
+                }
                 mInternalVa.setRepeatCount(ValueAnimator.INFINITE);
                 mInternalVa.setRepeatMode(ValueAnimator.REVERSE);
                 mInternalVa.start();

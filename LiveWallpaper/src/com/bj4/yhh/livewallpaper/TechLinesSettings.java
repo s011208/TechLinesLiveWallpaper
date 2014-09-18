@@ -39,7 +39,11 @@ public class TechLinesSettings extends Activity {
 
     public static final int DEFAULT_WORM_SPEED = 3;
 
+    public static final String PREF_HAS_SETTING_CHANGED = "pref_has_setting_changed";
+
     private SharedPreferences mPref;
+
+    private boolean mHasSettingChanged = false;
 
     private SharedPreferences getShpref() {
         if (mPref == null) {
@@ -52,6 +56,14 @@ public class TechLinesSettings extends Activity {
     public void onStart() {
         super.onStart();
         EasyTracker.getInstance(this).activityStart(this);
+    }
+
+    public void onPause() {
+        if (mHasSettingChanged) {
+            getShpref().edit().putBoolean(PREF_HAS_SETTING_CHANGED, true).apply();
+        }
+        mHasSettingChanged = false;
+        super.onPause();
     }
 
     @Override
@@ -85,6 +97,7 @@ public class TechLinesSettings extends Activity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 getShpref().edit().putInt(PREF_WORM_LENGTH, progress).apply();
+                mHasSettingChanged = true;
             }
 
             @Override
@@ -102,6 +115,7 @@ public class TechLinesSettings extends Activity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 getShpref().edit().putInt(PREF_WORM_COUNT, progress).apply();
+                mHasSettingChanged = true;
             }
 
             @Override
@@ -119,6 +133,7 @@ public class TechLinesSettings extends Activity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 getShpref().edit().putInt(PREF_WORM_WIDTH, progress).apply();
+                mHasSettingChanged = true;
             }
 
             @Override
@@ -136,6 +151,7 @@ public class TechLinesSettings extends Activity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 getShpref().edit().putInt(PREF_WORM_SPEED, progress).apply();
+                mHasSettingChanged = true;
             }
 
             @Override
