@@ -127,15 +127,30 @@ public class TechLinesWallpaperService extends WallpaperService {
             mIsVisible = visible;
             if (visible) {
                 loadInfo();
-                mInternalVa.setRepeatCount(ValueAnimator.INFINITE);
-                mInternalVa.setRepeatMode(ValueAnimator.REVERSE);
-                mInternalVa.start();
+                getInternalAnimator().setRepeatCount(ValueAnimator.INFINITE);
+                getInternalAnimator().setRepeatMode(ValueAnimator.REVERSE);
+                getInternalAnimator().start();
                 registerStuff();
             } else {
-                mInternalVa.setRepeatCount(0);
-                mInternalVa.end();
+                getInternalAnimator().setRepeatCount(0);
+                getInternalAnimator().end();
                 unregisterStuff();
             }
+        }
+
+        private ValueAnimator getInternalAnimator() {
+            if (mInternalVa == null) {
+                mInternalVa = ValueAnimator.ofFloat(1, 4);
+                mInternalVa.setDuration(4000);
+                mInternalVa.addUpdateListener(new AnimatorUpdateListener() {
+
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator va) {
+                        draw();
+                    }
+                });
+            }
+            return mInternalVa;
         }
 
         @Override
@@ -150,15 +165,7 @@ public class TechLinesWallpaperService extends WallpaperService {
             super.onSurfaceChanged(holder, format, width, height);
             mWidth = width;
             mHeight = height;
-            mInternalVa = ValueAnimator.ofFloat(1, 4);
-            mInternalVa.setDuration(4000);
-            mInternalVa.addUpdateListener(new AnimatorUpdateListener() {
-
-                @Override
-                public void onAnimationUpdate(ValueAnimator va) {
-                    draw();
-                }
-            });
+            getInternalAnimator();
         }
 
         @Override

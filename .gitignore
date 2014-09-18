@@ -36,7 +36,7 @@ Icon
 .Trashes
 
 # android
-/code/gen/
-/code/bin/
+/*/gen/
+/*/bin/
 /gen
 /bin
