@@ -13,6 +13,8 @@ import android.graphics.Path;
 public class TechLines {
     private static final int GRABBING_DISTANCE = 20;
 
+    private static final int GRABBING_GROWTH_CONSTANT = 3;
+
     public int LOADING_WORM_CHANGE_DISTANCE;
 
     public int LOADING_WORM_LENGTH;
@@ -128,12 +130,13 @@ public class TechLines {
     public void struggle(final int width, final int height, final Canvas canvas,
             final Paint circlaPaint, final Paint paint) {
         int start = 0, finalPosition = 0;
+        mGrabbingRadius += GRABBING_GROWTH_CONSTANT;
         switch (mWay) {
             case 0:
                 start = mLoadingLineX - mGrabbingRadius * 2;
                 finalPosition = mLoadingLineX - LOADING_WORM_LENGTH + mGrabbingRadius * 2;
                 canvas.drawCircle(mLoadingLineX - LOADING_WORM_LENGTH / 2, mLoadingLineY,
-                        mGrabbingRadius++, circlaPaint);
+                        mGrabbingRadius, circlaPaint);
                 if (finalPosition <= start) {
                     canvas.drawLine(start, mLoadingLineY, finalPosition, mLoadingLineY, paint);
                 }
@@ -142,7 +145,7 @@ public class TechLines {
                 start = mLoadingLineX + mGrabbingRadius * 2;
                 finalPosition = mLoadingLineX + LOADING_WORM_LENGTH - mGrabbingRadius * 2;
                 canvas.drawCircle(mLoadingLineX + LOADING_WORM_LENGTH / 2, mLoadingLineY,
-                        mGrabbingRadius++, circlaPaint);
+                        mGrabbingRadius, circlaPaint);
                 if (finalPosition >= start) {
                     canvas.drawLine(start, mLoadingLineY, finalPosition, mLoadingLineY, paint);
                 }
@@ -151,7 +154,7 @@ public class TechLines {
                 start = mLoadingLineY - mGrabbingRadius * 2;
                 finalPosition = mLoadingLineY - LOADING_WORM_LENGTH + mGrabbingRadius * 2;
                 canvas.drawCircle(mLoadingLineX, mLoadingLineY - LOADING_WORM_LENGTH / 2,
-                        mGrabbingRadius++, circlaPaint);
+                        mGrabbingRadius, circlaPaint);
                 if (finalPosition <= start) {
                     canvas.drawLine(mLoadingLineX, start, mLoadingLineX, finalPosition, paint);
                 }
@@ -160,7 +163,7 @@ public class TechLines {
                 start = mLoadingLineY + mGrabbingRadius * 2;
                 finalPosition = mLoadingLineY + LOADING_WORM_LENGTH - mGrabbingRadius * 2;
                 canvas.drawCircle(mLoadingLineX, mLoadingLineY + LOADING_WORM_LENGTH / 2,
-                        mGrabbingRadius++, circlaPaint);
+                        mGrabbingRadius, circlaPaint);
                 if (finalPosition >= start) {
                     canvas.drawLine(mLoadingLineX, start, mLoadingLineX, finalPosition, paint);
                 }
