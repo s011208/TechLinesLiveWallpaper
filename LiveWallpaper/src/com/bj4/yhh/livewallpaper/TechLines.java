@@ -5,11 +5,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Path;
 
 /**
  * @author Yen-Hsun_Huang
  */
 public class TechLines {
+    private static final int GRABBING_DISTANCE = 20;
 
     public int LOADING_WORM_CHANGE_DISTANCE;
 
@@ -18,6 +20,8 @@ public class TechLines {
     public int mWay = 0;
 
     public int mLoadingLineX, mLoadingLineY;
+
+    private boolean mIsGrabbing = false;
 
     public TechLines(float density, Context context) {
         SharedPreferences pref = context.getSharedPreferences(TechLinesSettings.PREF_FILE,
@@ -30,6 +34,45 @@ public class TechLines {
         LOADING_WORM_LENGTH = (int)((((Math.random() * 1000) % 150) + baseWormLength) * density);
         mLoadingLineX = -1 - LOADING_WORM_LENGTH;
         mLoadingLineY = -1 - LOADING_WORM_LENGTH;
+    }
+
+    public void release() {
+        mIsGrabbing = false;
+        mGrabbingRadius = 0;
+    }
+
+    public boolean isGrabbing(final int x, final int y) {
+        switch (mWay) {
+            case 0:
+                if (x <= mLoadingLineX && x >= mLoadingLineX - LOADING_WORM_LENGTH
+                        && y >= mLoadingLineY - GRABBING_DISTANCE
+                        && y <= mLoadingLineY + GRABBING_DISTANCE) {
+                    mIsGrabbing = true;
+                }
+                break;
+            case 1:
+                if (x >= mLoadingLineX && x <= mLoadingLineX + LOADING_WORM_LENGTH
+                        && y >= mLoadingLineY - GRABBING_DISTANCE
+                        && y <= mLoadingLineY + GRABBING_DISTANCE) {
+                    mIsGrabbing = true;
+                }
+                break;
+            case 2:
+                if (y <= mLoadingLineY && y >= mLoadingLineY - LOADING_WORM_LENGTH
+                        && x >= mLoadingLineX - GRABBING_DISTANCE
+                        && x <= mLoadingLineX + GRABBING_DISTANCE) {
+                    mIsGrabbing = true;
+                }
+                break;
+            case 3:
+                if (y >= mLoadingLineY && y <= mLoadingLineY + LOADING_WORM_LENGTH
+                        && x >= mLoadingLineX - GRABBING_DISTANCE
+                        && x <= mLoadingLineX + GRABBING_DISTANCE) {
+                    mIsGrabbing = true;
+                }
+                break;
+        }
+        return mIsGrabbing;
     }
 
     public void calculate(final int width, final int height, final Canvas canvas, final Paint paint) {
@@ -76,6 +119,51 @@ public class TechLines {
                 mLoadingLineY -= LOADING_WORM_CHANGE_DISTANCE;
                 canvas.drawLine(mLoadingLineX, mLoadingLineY, mLoadingLineX, mLoadingLineY
                         + LOADING_WORM_LENGTH, paint);
+                break;
+        }
+    }
+
+    private int mGrabbingRadius = 0;
+
+    public void struggle(final int width, final int height, final Canvas canvas,
+            final Paint circlaPaint, final Paint paint) {
+        int start = 0, finalPosition = 0;
+        switch (mWay) {
+            case 0:
+                start = mLoadingLineX - mGrabbingRadius * 2;
+                finalPosition = mLoadingLineX - LOADING_WORM_LENGTH + mGrabbingRadius * 2;
+                canvas.drawCircle(mLoadingLineX - LOADING_WORM_LENGTH / 2, mLoadingLineY,
+                        mGrabbingRadius++, circlaPaint);
+                if (finalPosition <= start) {
+                    canvas.drawLine(start, mLoadingLineY, finalPosition, mLoadingLineY, paint);
+                }
+                break;
+            case 1:
+                start = mLoadingLineX + mGrabbingRadius * 2;
+                finalPosition = mLoadingLineX + LOADING_WORM_LENGTH - mGrabbingRadius * 2;
+                canvas.drawCircle(mLoadingLineX + LOADING_WORM_LENGTH / 2, mLoadingLineY,
+                        mGrabbingRadius++, circlaPaint);
+                if (finalPosition >= start) {
+                    canvas.drawLine(start, mLoadingLineY, finalPosition, mLoadingLineY, paint);
+                }
+                break;
+            case 2:
+                start = mLoadingLineY - mGrabbingRadius * 2;
+                finalPosition = mLoadingLineY - LOADING_WORM_LENGTH + mGrabbingRadius * 2;
+                canvas.drawCircle(mLoadingLineX, mLoadingLineY - LOADING_WORM_LENGTH / 2,
+                        mGrabbingRadius++, circlaPaint);
+                if (finalPosition <= start) {
+                    canvas.drawLine(mLoadingLineX, start, mLoadingLineX, finalPosition, paint);
+                }
+                break;
+            case 3:
+                start = mLoadingLineY + mGrabbingRadius * 2;
+                finalPosition = mLoadingLineY + LOADING_WORM_LENGTH - mGrabbingRadius * 2;
+                canvas.drawCircle(mLoadingLineX, mLoadingLineY + LOADING_WORM_LENGTH / 2,
+                        mGrabbingRadius++, circlaPaint);
+                if (finalPosition >= start) {
+                    canvas.drawLine(mLoadingLineX, start, mLoadingLineX, finalPosition, paint);
+                }
                 break;
         }
     }

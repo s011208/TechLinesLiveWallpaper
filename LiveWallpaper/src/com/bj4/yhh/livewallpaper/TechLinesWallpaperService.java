@@ -32,11 +32,25 @@ public class TechLinesWallpaperService extends WallpaperService {
 
     private class TechLinesWallpaper extends Engine {
 
+        private Handler mHandler = new Handler();
+
+        private Runnable mUpdateSettingsRunnable = new Runnable() {
+
+            @Override
+            public void run() {
+                mContext.getSharedPreferences(TechLinesSettings.PREF_FILE, Context.MODE_PRIVATE)
+                        .edit().putBoolean(TechLinesSettings.PREF_HAS_SETTING_CHANGED, false)
+                        .apply();
+            }
+        };
+
+        private TechLines mGrabbingWorm = null;
+
         private boolean mIsVisible = true;
 
         private ValueAnimator mInternalVa;
 
-        private final Paint mRandomLinesPaint = new Paint();
+        private final Paint mReleasedWormPaint = new Paint(), mStruggledWormPaint = new Paint();
 
         private final ArrayList<TechLines> mLoadingLines = new ArrayList<TechLines>();
 
@@ -46,8 +60,10 @@ public class TechLinesWallpaperService extends WallpaperService {
 
         public TechLinesWallpaper(Context context) {
             mContext = context.getApplicationContext();
-            mRandomLinesPaint.setDither(true);
-            mRandomLinesPaint.setAntiAlias(true);
+            mReleasedWormPaint.setDither(true);
+            mReleasedWormPaint.setAntiAlias(true);
+            mStruggledWormPaint.setDither(true);
+            mStruggledWormPaint.setAntiAlias(true);
             loadInfo();
         }
 
@@ -60,7 +76,10 @@ public class TechLinesWallpaperService extends WallpaperService {
             final int wormWidth = pref.getInt(TechLinesSettings.PREF_WORM_WIDTH,
                     TechLinesSettings.DEFAULT_WORM_WIDTH);
             float density = getResources().getDisplayMetrics().scaledDensity;
-            mRandomLinesPaint.setStrokeWidth((1 + wormWidth) * density);
+            mReleasedWormPaint.setStrokeWidth((1 + wormWidth) * density);
+            mReleasedWormPaint.setColor(Color.WHITE);
+            mStruggledWormPaint.setStrokeWidth((1 + wormWidth) * density);
+            mStruggledWormPaint.setColor(Color.RED);
             for (int i = 0; i < wormCount; i++) {
                 mLoadingLines.add(new TechLines(density, mContext));
             }
@@ -74,6 +93,8 @@ public class TechLinesWallpaperService extends WallpaperService {
                         .getSharedPreferences(TechLinesSettings.PREF_FILE, Context.MODE_PRIVATE)
                         .getBoolean(TechLinesSettings.PREF_HAS_SETTING_CHANGED, false) == true) {
                     loadInfo();
+                    mHandler.removeCallbacks(mUpdateSettingsRunnable);
+                    mHandler.postDelayed(mUpdateSettingsRunnable, 2000);
                 }
                 mInternalVa.setRepeatCount(ValueAnimator.INFINITE);
                 mInternalVa.setRepeatMode(ValueAnimator.REVERSE);
@@ -105,11 +126,31 @@ public class TechLinesWallpaperService extends WallpaperService {
                     draw();
                 }
             });
-            mRandomLinesPaint.setColor(Color.WHITE);
         }
 
         @Override
         public void onTouchEvent(MotionEvent event) {
+            final int x = (int)event.getRawX();
+            final int y = (int)event.getRawY();
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                for (TechLines line : mLoadingLines) {
+                    if (line.isGrabbing(x, y)) {
+                        mGrabbingWorm = line;
+                        break;
+                    }
+                }
+            } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (mGrabbingWorm != null) {
+                    mGrabbingWorm.release();
+                    mGrabbingWorm = null;
+                    final int wormWidth = mContext.getSharedPreferences(
+                            TechLinesSettings.PREF_FILE, Context.MODE_PRIVATE)
+                            .getInt(TechLinesSettings.PREF_WORM_WIDTH,
+                                    TechLinesSettings.DEFAULT_WORM_WIDTH);
+                    float density = getResources().getDisplayMetrics().scaledDensity;
+                    mStruggledWormPaint.setStrokeWidth((1 + wormWidth) * density);
+                }
+            }
         }
 
         private void draw() {
@@ -121,7 +162,11 @@ public class TechLinesWallpaperService extends WallpaperService {
                     canvas.drawColor(Color.BLACK);
                     if (mIsVisible) {
                         for (TechLines line : mLoadingLines) {
-                            line.calculate(mWidth, mHeight, canvas, mRandomLinesPaint);
+                            if (mGrabbingWorm != line) {
+                                line.calculate(mWidth, mHeight, canvas, mReleasedWormPaint);
+                            } else {
+                                line.struggle(mWidth, mHeight, canvas, mStruggledWormPaint, mReleasedWormPaint);
+                            }
                         }
                     }
                 }
