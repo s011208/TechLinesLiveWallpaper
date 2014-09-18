@@ -6,4 +6,5 @@
 	<string name="line_count">Number</string>
 	<string name="line_width">Width</string>
 	<string name="line_speed">Speed</string>
+	<string name="line_color">Color</string>
 </resources>

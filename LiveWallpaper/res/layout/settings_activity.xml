@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
+    android:background="@color/settings_background"
     android:orientation="vertical"
     android:padding="10dp" >
 
@@ -18,7 +18,7 @@
             android:layout_weight="2"
             android:gravity="center"
             android:text="@string/line_length"
-            android:textColor="#ffffff" />
+            android:textColor="@color/settings_text_color" />
 
         <SeekBar
             android:id="@+id/worm_length"
@@ -42,7 +42,7 @@
             android:layout_weight="2"
             android:gravity="center"
             android:text="@string/line_count"
-            android:textColor="#ffffff" />
+            android:textColor="@color/settings_text_color" />
 
         <SeekBar
             android:id="@+id/worm_count"
@@ -66,7 +66,7 @@
             android:layout_weight="2"
             android:gravity="center"
             android:text="@string/line_width"
-            android:textColor="#ffffff" />
+            android:textColor="@color/settings_text_color" />
 
         <SeekBar
             android:id="@+id/worm_width"
@@ -90,7 +90,7 @@
             android:layout_weight="2"
             android:gravity="center"
             android:text="@string/line_speed"
-            android:textColor="#ffffff" />
+            android:textColor="@color/settings_text_color" />
 
         <SeekBar
             android:id="@+id/worm_speed"
@@ -100,6 +100,29 @@
             android:layout_weight="5"
             android:max="10" >
         </SeekBar>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:text="@string/line_color"
+            android:textColor="@color/settings_text_color" />
+
+        <Spinner
+            android:id="@+id/worm_color"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="5" >
+        </Spinner>
     </LinearLayout>
 
 </LinearLayout>

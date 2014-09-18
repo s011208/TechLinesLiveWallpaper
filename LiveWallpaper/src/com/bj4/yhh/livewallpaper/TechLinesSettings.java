@@ -11,15 +11,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.Spinner;
 
 /**
  * @author Yen-Hsun_Huang
  */
 public class TechLinesSettings extends Activity {
     private SeekBar mWormLength, mWormCount, mWormWidth, mWormSpeed;
+
+    private Spinner mWormColor;
 
     public static final String PREF_FILE = "settings_pref";
 
@@ -39,11 +46,13 @@ public class TechLinesSettings extends Activity {
 
     public static final int DEFAULT_WORM_SPEED = 3;
 
-    public static final String PREF_HAS_SETTING_CHANGED = "pref_has_setting_changed";
+    public static final String PREF_WORM_COLOR = "pref_worm_color";
+
+    public static final int COLOR_CLASSIC = 0;
+
+    public static final int COLOR_BATTERY = 1;
 
     private SharedPreferences mPref;
-
-    private boolean mHasSettingChanged = false;
 
     private SharedPreferences getShpref() {
         if (mPref == null) {
@@ -59,10 +68,6 @@ public class TechLinesSettings extends Activity {
     }
 
     public void onPause() {
-        if (mHasSettingChanged) {
-            getShpref().edit().putBoolean(PREF_HAS_SETTING_CHANGED, true).apply();
-        }
-        mHasSettingChanged = false;
         super.onPause();
     }
 
@@ -97,7 +102,6 @@ public class TechLinesSettings extends Activity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 getShpref().edit().putInt(PREF_WORM_LENGTH, progress).apply();
-                mHasSettingChanged = true;
             }
 
             @Override
@@ -115,7 +119,6 @@ public class TechLinesSettings extends Activity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 getShpref().edit().putInt(PREF_WORM_COUNT, progress).apply();
-                mHasSettingChanged = true;
             }
 
             @Override
@@ -133,7 +136,6 @@ public class TechLinesSettings extends Activity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 getShpref().edit().putInt(PREF_WORM_WIDTH, progress).apply();
-                mHasSettingChanged = true;
             }
 
             @Override
@@ -151,7 +153,6 @@ public class TechLinesSettings extends Activity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 getShpref().edit().putInt(PREF_WORM_SPEED, progress).apply();
-                mHasSettingChanged = true;
             }
 
             @Override
@@ -160,6 +161,25 @@ public class TechLinesSettings extends Activity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+        mWormColor = (Spinner)findViewById(R.id.worm_color);
+        ArrayAdapter<String> colorAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_dropdown_item_1line);
+        colorAdapter.add("Classic");
+        colorAdapter.add("Battery");
+        mWormColor.setAdapter(colorAdapter);
+        mWormColor.setSelection(getShpref().getInt(PREF_WORM_COLOR, COLOR_CLASSIC));
+        mWormColor.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                getShpref().edit().putInt(PREF_WORM_COLOR, position).apply();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
     }

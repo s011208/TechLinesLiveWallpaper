@@ -14,6 +14,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
+import android.os.BatteryManager;
 import android.os.Handler;
 import android.service.wallpaper.WallpaperService;
 import android.util.Log;
@@ -32,18 +33,6 @@ public class TechLinesWallpaperService extends WallpaperService {
 
     private class TechLinesWallpaper extends Engine {
 
-        private Handler mHandler = new Handler();
-
-        private Runnable mUpdateSettingsRunnable = new Runnable() {
-
-            @Override
-            public void run() {
-                mContext.getSharedPreferences(TechLinesSettings.PREF_FILE, Context.MODE_PRIVATE)
-                        .edit().putBoolean(TechLinesSettings.PREF_HAS_SETTING_CHANGED, false)
-                        .apply();
-            }
-        };
-
         private TechLines mGrabbingWorm = null;
 
         private boolean mIsVisible = true;
@@ -57,6 +46,13 @@ public class TechLinesWallpaperService extends WallpaperService {
         private int mWidth, mHeight;
 
         private Context mContext;
+
+        private final BroadcastReceiver mBatteryReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                processBatteryIntent(intent);
+            }
+        };
 
         public TechLinesWallpaper(Context context) {
             mContext = context.getApplicationContext();
@@ -85,23 +81,60 @@ public class TechLinesWallpaperService extends WallpaperService {
             }
         }
 
+        private final void processBatteryIntent(Intent batteryStatus) {
+            int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+            boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING
+                    || status == BatteryManager.BATTERY_STATUS_FULL;
+            int chargePlug = batteryStatus.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
+            boolean usbCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_USB;
+            boolean acCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_AC;
+            int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+            int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+            float batteryPct = level / (float)scale;
+            // if (!isCharging) {
+            mReleasedWormPaint.setColor(Color.rgb((int)(255 * (1 - batteryPct)),
+                    (int)(255 * batteryPct), 0));
+            // } else {
+            // if (usbCharge) {
+            // mReleasedWormPaint.setColor(Color.rgb(0, 255, 255));
+            // } else if (acCharge) {
+            // mReleasedWormPaint.setColor(Color.rgb(0, 0, 255));
+            // }
+            // }
+        }
+
+        private void registerStuff() {
+            if (mContext.getSharedPreferences(TechLinesSettings.PREF_FILE, Context.MODE_PRIVATE)
+                    .getInt(TechLinesSettings.PREF_WORM_COLOR, TechLinesSettings.COLOR_CLASSIC) == TechLinesSettings.COLOR_BATTERY) {
+                IntentFilter batteryIntentFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+                Intent batteryStatus = mContext.registerReceiver(mBatteryReceiver,
+                        batteryIntentFilter);
+                processBatteryIntent(batteryStatus);
+            } else {
+                mReleasedWormPaint.setColor(Color.WHITE);
+            }
+        }
+
+        private void unregisterStuff() {
+            if (mContext.getSharedPreferences(TechLinesSettings.PREF_FILE, Context.MODE_PRIVATE)
+                    .getInt(TechLinesSettings.PREF_WORM_COLOR, TechLinesSettings.COLOR_CLASSIC) == TechLinesSettings.COLOR_BATTERY) {
+                mContext.unregisterReceiver(mBatteryReceiver);
+            }
+        }
+
         @Override
         public void onVisibilityChanged(boolean visible) {
             mIsVisible = visible;
             if (visible) {
-                if (mContext
-                        .getSharedPreferences(TechLinesSettings.PREF_FILE, Context.MODE_PRIVATE)
-                        .getBoolean(TechLinesSettings.PREF_HAS_SETTING_CHANGED, false) == true) {
-                    loadInfo();
-                    mHandler.removeCallbacks(mUpdateSettingsRunnable);
-                    mHandler.postDelayed(mUpdateSettingsRunnable, 2000);
-                }
+                loadInfo();
                 mInternalVa.setRepeatCount(ValueAnimator.INFINITE);
                 mInternalVa.setRepeatMode(ValueAnimator.REVERSE);
                 mInternalVa.start();
+                registerStuff();
             } else {
                 mInternalVa.setRepeatCount(0);
                 mInternalVa.end();
+                unregisterStuff();
             }
         }
 
@@ -165,7 +198,8 @@ public class TechLinesWallpaperService extends WallpaperService {
                             if (mGrabbingWorm != line) {
                                 line.calculate(mWidth, mHeight, canvas, mReleasedWormPaint);
                             } else {
-                                line.struggle(mWidth, mHeight, canvas, mStruggledWormPaint, mReleasedWormPaint);
+                                line.struggle(mWidth, mHeight, canvas, mStruggledWormPaint,
+                                        mReleasedWormPaint);
                             }
                         }
                     }

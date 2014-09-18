@@ -18,6 +18,10 @@ public final class R {
          */
         public static final int ga_reportUncaughtExceptions=0x7f060001;
     }
+    public static final class color {
+        public static final int settings_background=0x7f070001;
+        public static final int settings_text_color=0x7f070000;
+    }
     public static final class dimen {
         /**  Default screen margins, per the Android Design guidelines. 
 
@@ -26,17 +30,18 @@ public final class R {
          would include 7" and 10" devices in landscape (~960dp and ~1280dp respectively).
     
          */
-        public static final int activity_horizontal_margin=0x7f070000;
-        public static final int activity_vertical_margin=0x7f070001;
+        public static final int activity_horizontal_margin=0x7f080000;
+        public static final int activity_vertical_margin=0x7f080001;
     }
     public static final class drawable {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int worm_count=0x7f090001;
-        public static final int worm_length=0x7f090000;
-        public static final int worm_speed=0x7f090003;
-        public static final int worm_width=0x7f090002;
+        public static final int worm_color=0x7f0a0004;
+        public static final int worm_count=0x7f0a0001;
+        public static final int worm_length=0x7f0a0000;
+        public static final int worm_speed=0x7f0a0003;
+        public static final int worm_width=0x7f0a0002;
     }
     public static final class layout {
         public static final int settings_activity=0x7f030000;
@@ -46,6 +51,7 @@ public final class R {
         /**  Replace placeholder ID with your tracking ID 
          */
         public static final int ga_trackingId=0x7f050000;
+        public static final int line_color=0x7f050006;
         public static final int line_count=0x7f050003;
         public static final int line_length=0x7f050002;
         public static final int line_speed=0x7f050005;
@@ -73,11 +79,11 @@ public final class R {
     
  API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f080000;
+        public static final int AppBaseTheme=0x7f090000;
         /**  Application theme. 
  All customizations that are NOT specific to a particular API-level can go here. 
          */
-        public static final int AppTheme=0x7f080001;
+        public static final int AppTheme=0x7f090001;
     }
     public static final class xml {
         public static final int tech_lines=0x7f040000;
