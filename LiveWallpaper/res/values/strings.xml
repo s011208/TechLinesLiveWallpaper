@@ -7,4 +7,5 @@
 	<string name="line_width">Width</string>
 	<string name="line_speed">Speed</string>
 	<string name="line_color">Color</string>
+	<string name="line_expand_speed">Spand speed</string>
 </resources>

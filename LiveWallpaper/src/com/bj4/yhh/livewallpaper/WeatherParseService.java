@@ -15,7 +15,7 @@ import android.util.Log;
 public class WeatherParseService extends Service {
     public static final String ON_WEATHER_DATA_UPDATE = "com.bj4.yhh.livewallpaper.WeatherParseService.onweatherdataupdate";
 
-    private static final String TAG = "QQQQ";
+    private static final String TAG = "WeatherParseService";
 
     private static final boolean DEBUG = true;
 

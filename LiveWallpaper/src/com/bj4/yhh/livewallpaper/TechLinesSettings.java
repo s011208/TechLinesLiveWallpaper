@@ -24,7 +24,7 @@ import android.widget.Spinner;
  * @author Yen-Hsun_Huang
  */
 public class TechLinesSettings extends Activity {
-    private SeekBar mWormLength, mWormCount, mWormWidth, mWormSpeed;
+    private SeekBar mWormLength, mWormCount, mWormWidth, mWormSpeed, mWormExplodeSpeed;
 
     private Spinner mWormColor;
 
@@ -45,6 +45,10 @@ public class TechLinesSettings extends Activity {
     public static final String PREF_WORM_SPEED = "pref_worm_speed";
 
     public static final int DEFAULT_WORM_SPEED = 3;
+
+    public static final String PREF_WORM_EXPLODE_SPEED = "pref_worm_explode_speed";
+
+    public static final int DEFAULT_WORM_EXPLODE_SPEED = 3;
 
     public static final String PREF_WORM_COLOR = "pref_worm_color";
 
@@ -71,8 +75,7 @@ public class TechLinesSettings extends Activity {
         super.onPause();
     }
 
-    @Override
-    public void onStop() {
+    private void analyticsData() {
         Tracker tracker = GoogleAnalytics.getInstance(this).getTracker("UA-54904223-1");
         tracker.send(MapBuilder.createEvent("settings", "worm length",
                 String.valueOf(getShpref().getInt(PREF_WORM_LENGTH, DEFAULT_WORM_LENGTH)), null)
@@ -86,6 +89,27 @@ public class TechLinesSettings extends Activity {
         tracker.send(MapBuilder.createEvent("settings", "worm speed",
                 String.valueOf(getShpref().getInt(PREF_WORM_SPEED, DEFAULT_WORM_SPEED)), null)
                 .build());
+        tracker.send(MapBuilder.createEvent("settings", "worm explode speed",
+                String.valueOf(getShpref().getInt(PREF_WORM_EXPLODE_SPEED, DEFAULT_WORM_EXPLODE_SPEED)), null)
+                .build());
+        String wormColor = null;
+        switch (getShpref().getInt(PREF_WORM_COLOR, COLOR_CLASSIC)) {
+            case COLOR_CLASSIC:
+                wormColor = "Classic";
+                break;
+            case COLOR_BATTERY:
+                wormColor = "Battery";
+                break;
+            default:
+                wormColor = "Classic";
+                break;
+        }
+        tracker.send(MapBuilder.createEvent("settings", "worm color", wormColor, null).build());
+    }
+
+    @Override
+    public void onStop() {
+        analyticsData();
         super.onStop();
         EasyTracker.getInstance(this).activityStop(this);
     }
@@ -153,6 +177,23 @@ public class TechLinesSettings extends Activity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 getShpref().edit().putInt(PREF_WORM_SPEED, progress).apply();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+        mWormExplodeSpeed = (SeekBar)findViewById(R.id.worm_explode_speed);
+        mWormExplodeSpeed.setProgress(getShpref().getInt(PREF_WORM_EXPLODE_SPEED, DEFAULT_WORM_EXPLODE_SPEED));
+        mWormExplodeSpeed.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                getShpref().edit().putInt(PREF_WORM_EXPLODE_SPEED, progress).apply();
             }
 
             @Override

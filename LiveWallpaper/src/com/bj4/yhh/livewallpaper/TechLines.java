@@ -14,15 +14,9 @@ import android.graphics.drawable.BitmapDrawable;
  * @author Yen-Hsun_Huang
  */
 public class TechLines {
-    public interface TechLinesCallback {
-        public void onGrabbing(Canvas canvas, int centerX, int centerY);
-    }
-
-    private TechLinesCallback mCallback;
-
     private static final int GRABBING_DISTANCE = 30;
 
-    private static final int GRABBING_GROWTH_CONSTANT = 3;
+    private int GRABBING_GROWTH_CONSTANT;
 
     public int LOADING_WORM_CHANGE_DISTANCE;
 
@@ -36,7 +30,7 @@ public class TechLines {
 
     private Context mContext;
 
-    public TechLines(float density, Context context, TechLinesCallback callback) {
+    public TechLines(float density, Context context) {
         mContext = context;
         SharedPreferences pref = context.getSharedPreferences(TechLinesSettings.PREF_FILE,
                 Context.MODE_PRIVATE);
@@ -46,9 +40,10 @@ public class TechLines {
         final int baseWormLength = pref.getInt(TechLinesSettings.PREF_WORM_LENGTH,
                 TechLinesSettings.DEFAULT_WORM_LENGTH);
         LOADING_WORM_LENGTH = (int)((((Math.random() * 1000) % 150) + baseWormLength) * density);
+        GRABBING_GROWTH_CONSTANT = pref.getInt(TechLinesSettings.PREF_WORM_EXPLODE_SPEED,
+                TechLinesSettings.DEFAULT_WORM_EXPLODE_SPEED);
         mLoadingLineX = -1 - LOADING_WORM_LENGTH;
         mLoadingLineY = -1 - LOADING_WORM_LENGTH;
-        mCallback = callback;
     }
 
     public void release() {
@@ -141,7 +136,8 @@ public class TechLines {
     private int mGrabbingRadius = 0;
 
     public void showInfo(final int width, final int height, final Canvas canvas,
-            final Paint circlaPaint, final Paint paint) {
+            final Paint circlaPaint, final Paint paint, final Paint textPaint,
+            final WeatherData wData, final Bitmap grabbingIcon) {
         int start = 0, finalPosition = 0;
         int centerX = 0, centerY = 0;
         mGrabbingRadius += GRABBING_GROWTH_CONSTANT;
@@ -187,8 +183,15 @@ public class TechLines {
                 }
                 break;
         }
-        if (mCallback != null) {
-            mCallback.onGrabbing(canvas, centerX, centerY);
+        if (wData != null) {
+            int bitmapXOffset = grabbingIcon.getWidth() / 2;
+            int bitmapYOffset = grabbingIcon.getHeight() / 2;
+            canvas.drawBitmap(grabbingIcon, centerX - bitmapXOffset, centerY - bitmapYOffset, null);
+            canvas.drawText(wData.mText, centerX, centerY + bitmapYOffset, textPaint);
+            canvas.drawText(wData.mTemperature + "", centerX, centerY + bitmapYOffset * 1.35f,
+                    textPaint);
+            canvas.drawText(wData.mCity, centerX, centerY + bitmapYOffset * 1.7f, textPaint);
+            canvas.drawText(wData.mCountry, centerX, centerY + bitmapYOffset * 2.05f, textPaint);
         }
     }
 }

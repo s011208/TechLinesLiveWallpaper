@@ -4,5 +4,6 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="grabbing_textsize">20sp</dimen>
+    <dimen name="settings_textsize">16sp</dimen>
 
 </resources>

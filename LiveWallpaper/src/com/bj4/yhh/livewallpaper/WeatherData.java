@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
+/**
+ * @author Yen-Hsun_Huang
+ */
 public class WeatherData {
     public int mImageCode;
 

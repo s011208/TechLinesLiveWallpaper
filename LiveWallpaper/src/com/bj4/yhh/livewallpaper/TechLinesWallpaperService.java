@@ -11,6 +11,8 @@ import com.google.android.gms.location.LocationRequest;
 
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -42,7 +44,7 @@ public class TechLinesWallpaperService extends WallpaperService {
 
     private class TechLinesWallpaper extends Engine implements LocationListener,
             GooglePlayServicesClient.ConnectionCallbacks,
-            GooglePlayServicesClient.OnConnectionFailedListener, TechLines.TechLinesCallback {
+            GooglePlayServicesClient.OnConnectionFailedListener {
 
         private final Handler mHandler = new Handler();
 
@@ -112,7 +114,7 @@ public class TechLinesWallpaperService extends WallpaperService {
             mStruggledWormPaint.setStrokeWidth((1 + wormWidth) * density);
             mStruggledWormPaint.setColor(Color.YELLOW);
             for (int i = 0; i < wormCount; i++) {
-                mLoadingLines.add(new TechLines(density, mContext, this));
+                mLoadingLines.add(new TechLines(density, mContext));
             }
         }
 
@@ -212,23 +214,6 @@ public class TechLinesWallpaperService extends WallpaperService {
         }
 
         @Override
-        public void onGrabbing(Canvas canvas, int centerX, int centerY) {
-            if (mWeatherData != null) {
-                int bitmapXOffset = mGrabbingIcon.getWidth() / 2;
-                int bitmapYOffset = mGrabbingIcon.getHeight() / 2;
-                canvas.drawBitmap(mGrabbingIcon, centerX - bitmapXOffset, centerY - bitmapYOffset,
-                        null);
-                canvas.drawText(mWeatherData.mText, centerX, centerY + bitmapYOffset, mTextPaint);
-                canvas.drawText(mWeatherData.mTemperature + "", centerX, centerY + bitmapYOffset
-                        * 1.35f, mTextPaint);
-                canvas.drawText(mWeatherData.mCity, centerX, centerY + bitmapYOffset * 1.7f,
-                        mTextPaint);
-                canvas.drawText(mWeatherData.mCountry, centerX, centerY + bitmapYOffset * 2.05f,
-                        mTextPaint);
-            }
-        }
-
-        @Override
         public void onTouchEvent(MotionEvent event) {
             final int x = (int)event.getRawX();
             final int y = (int)event.getRawY();
@@ -266,7 +251,7 @@ public class TechLinesWallpaperService extends WallpaperService {
                                 line.calculate(mWidth, mHeight, canvas, mReleasedWormPaint);
                             } else {
                                 line.showInfo(mWidth, mHeight, canvas, mStruggledWormPaint,
-                                        mReleasedWormPaint);
+                                        mReleasedWormPaint, mTextPaint, mWeatherData, mGrabbingIcon);
                             }
                         }
                     }
@@ -279,6 +264,8 @@ public class TechLinesWallpaperService extends WallpaperService {
 
         // location update
         private static final long DEFAULT_UPDATE_LOCATION_INTERVAL = 10 * 60 * 1000;
+
+        private static final long UPDATE_WEATHER_DATA_INTERVAL = 60 * 60 * 1000 * 3;
 
         private LocationClient mLocationClient;
 
@@ -293,12 +280,26 @@ public class TechLinesWallpaperService extends WallpaperService {
             }
         };
 
+        private Runnable mUpdateWeatherDataRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (mLocationClient.isConnected()) {
+                    updateCurrentLocationData(mLocationClient.getLastLocation());
+                }
+                mHandler.removeCallbacks(mUpdateWeatherDataRunnable);
+                mHandler.postDelayed(mUpdateWeatherDataRunnable, UPDATE_WEATHER_DATA_INTERVAL);
+            }
+        };
+
         private void updateCurrentLocationData(Location location) {
-            Intent startIntent = new Intent(mContext, WeatherParseService.class);
-            startIntent.putExtra(WeatherParseService.INTENT_KEY_LATITUDE, location.getLatitude());
-            startIntent
-                    .putExtra(WeatherParseService.INTENT_KEY_LONGTITUDE, location.getLongitude());
-            mContext.startService(startIntent);
+            if (location != null) {
+                Intent startIntent = new Intent(mContext, WeatherParseService.class);
+                startIntent.putExtra(WeatherParseService.INTENT_KEY_LATITUDE,
+                        location.getLatitude());
+                startIntent.putExtra(WeatherParseService.INTENT_KEY_LONGTITUDE,
+                        location.getLongitude());
+                mContext.startService(startIntent);
+            }
         }
 
         @Override
@@ -313,6 +314,8 @@ public class TechLinesWallpaperService extends WallpaperService {
                     .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
             mLocationClient.requestLocationUpdates(locationRequest, this);
             mHandler.removeCallbacks(mLocationClientConnectionRunnable);
+            mHandler.removeCallbacks(mUpdateWeatherDataRunnable);
+            mHandler.postDelayed(mUpdateWeatherDataRunnable, UPDATE_WEATHER_DATA_INTERVAL);
         }
 
         @Override
